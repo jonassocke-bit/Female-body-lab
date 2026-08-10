@@ -1,0 +1,17 @@
+{
+  "source": "FemaleCustomBasemesh package",
+  "base_used": "FemaleCustomBasemesh_by_AlexLashko_03_Caucasian.fbx",
+  "vertices": 18004,
+  "triangles": 36004,
+  "topology_identical_across_tested_variants": true,
+  "morph_targets": [
+    "Muscular",
+    "Overweight",
+    "Skinny",
+    "ArmsStraight",
+    "ArmsDown"
+  ],
+  "body_face_preservation": "Body morph deltas smoothly masked to zero between Y=150-160cm to preserve chosen base face.",
+  "units": "converted from centimeters to meters",
+  "notes": "Eyes/Teeth intentionally excluded. Textures/normal maps intentionally excluded for white mannequin test."
+}
