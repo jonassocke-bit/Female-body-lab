@@ -1,21 +1,9 @@
 {
-  "version": "0.2",
-  "independent_from_harness_designer": true,
-  "female": {
-    "source": "FemaleCustomBasemesh_LowPoly.blend",
-    "blender_version": "280",
-    "vertices": 18004,
-    "triangles": 36004,
-    "nominal_height_cm": 179.98
-  },
-  "male": {
-    "source": "MaleCustomBasemesh_LowPoly.blend",
-    "blender_version": "402",
-    "vertices": 18004,
-    "triangles": 36004,
-    "nominal_height_cm": 179.99
-  },
-  "morph_targets": [
+  "version": "0.3",
+  "harness_designer_modified": false,
+  "vertices": 18004,
+  "triangles": 36004,
+  "existing_morphs": [
     "Muscular",
     "Overweight",
     "Skinny",
@@ -23,14 +11,21 @@
     "ArmsDown",
     "LegsTogether"
   ],
-  "controls": [
-    "Gender",
-    "BodyShape Skinny\u2194Neutral\u2194Curvy",
-    "Muscularity",
-    "Height",
-    "Arms",
-    "Legs"
+  "procedural_morphs": [
+    "WaistNarrow",
+    "WaistWide",
+    "HipsNarrow",
+    "HipsWide",
+    "BustSmall",
+    "BustLarge",
+    "ButtFlat",
+    "ButtFull"
   ],
-  "material": "white matte, no textures/eyes/teeth",
-  "topology_note": "Both source bodies expose 18,004 shape-key vertices. The verified 36,004-triangle topology from Female Model Lab v0.1 is used for the standalone morph GLBs."
+  "notes": {
+    "waist": "localized smooth X/Z torso deformation",
+    "hips": "localized pelvis width with slight depth compensation",
+    "bust": "front upper-torso volume, independent of waist/hips",
+    "butt": "rear pelvis projection, independent of hip width",
+    "male": "same morph targets, UI influence scaled down for more conservative range"
+  }
 }

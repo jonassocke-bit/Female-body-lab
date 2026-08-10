@@ -1,45 +1,76 @@
 <!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Body Model Lab v0.2</title>
+<html lang="de"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Body Model Lab v0.3a</title>
 <style>
 :root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c0d10;color:#fff}
-#app{position:fixed;inset:0}canvas{display:block;width:100%;height:100%;touch-action:none}
-.panel{position:fixed;left:14px;right:14px;bottom:14px;max-width:680px;margin:auto;padding:16px;border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(20,21,26,.76);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 16px 60px rgba(0,0,0,.32)}
-.head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}h1{font-size:17px;margin:0}.tag{font-size:11px;opacity:.5}
-.gender{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.gender button{padding:10px}.gender button.active{background:#fff;color:#111}
-.row{display:grid;grid-template-columns:105px 1fr 62px;gap:9px;align-items:center;margin:9px 0}
-.row label{font-weight:650;font-size:13px}.value{text-align:right;font-size:12px;font-variant-numeric:tabular-nums;opacity:.72}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0c0d10;color:white}
+#app{position:fixed;inset:0}canvas{width:100%;height:100%;display:block;touch-action:none}
+.panel{
+  position:fixed;left:10px;right:10px;bottom:10px;max-width:700px;margin:auto;
+  height:360px;min-height:118px;max-height:82vh;
+  border:1px solid rgba(255,255,255,.14);border-radius:22px;
+  background:rgba(20,21,26,.70);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 18px 60px rgba(0,0,0,.32);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.grabber{
+  position:relative;flex:0 0 34px;cursor:ns-resize;touch-action:none;
+}
+.grabber::after{
+  content:"";position:absolute;left:50%;top:10px;transform:translateX(-50%);
+  width:64px;height:5px;border-radius:999px;background:rgba(255,255,255,.34);
+}
+.sheet-scroll{
+  flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  padding:0 15px 16px;
+  -webkit-overflow-scrolling:touch;
+}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+h1{font-size:16px;margin:0}.tag{font-size:10px;opacity:.48}
+.gender{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
+button{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:8px 11px;font-weight:650}
+button.active{background:white;color:#111}
+.row{display:grid;grid-template-columns:92px 1fr 70px;gap:8px;align-items:center;margin:8px 0}
+.row label{font-size:12px;font-weight:650}.value{text-align:right;font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
 input[type=range]{width:100%;accent-color:white}
-button{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:8px 12px;font-weight:650}
-button:active{background:#fff;color:#111}
-.presets{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.note{font-size:10px;line-height:1.35;opacity:.45;margin-top:8px}
-.status{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.46);font-size:11px;opacity:.75;white-space:nowrap}
-@media (min-width:760px){.panel{left:auto;right:24px;bottom:24px;width:430px}}
+.group-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.38;margin-top:12px;margin-bottom:5px}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.status{position:fixed;top:10px;left:50%;transform:translateX(-50%);padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.45);font-size:10px;white-space:nowrap}
+@media(min-width:780px){
+  .panel{left:auto;right:20px;bottom:20px;width:440px;max-height:86vh}
+}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
-</head>
-<body>
-<div id="app"></div><div class="status" id="status">Modelle werden geladen …</div>
-<section class="panel">
-<div class="head"><h1>Body Model Lab</h1><span class="tag">v0.2 · unabhängig</span></div>
+</head><body>
+<div id="app"></div><div id="status" class="status">Modelle werden geladen …</div>
+<section class="panel" id="modelSheet">
+<div class="grabber" id="modelSheetGrabber" aria-label="Menühöhe ändern"></div>
+<div class="sheet-scroll">
+<div class="head"><h1>Body Model Lab</h1><span class="tag">v0.3a · unabhängig</span></div>
 <div class="gender"><button id="femaleBtn" class="active">Female</button><button id="maleBtn">Male</button></div>
+
+<div class="group-title">Grundkörper</div>
 <div class="row"><label>Körperform</label><input id="shape" type="range" min="-1" max="1" step=".01" value="0"><span id="shapeV" class="value">Neutral</span></div>
 <div class="row"><label>Muskulatur</label><input id="muscular" type="range" min="0" max="1" step=".01" value="0"><span id="muscularV" class="value">0%</span></div>
 <div class="row"><label>Höhe</label><input id="height" type="range" min="145" max="205" step="1" value="175"><span id="heightV" class="value">175 cm</span></div>
+
+<div class="group-title">Proportionen</div>
+<div class="row"><label>Taille</label><input id="waist" type="range" min="-1" max="1" step=".01" value="0"><span id="waistV" class="value">Neutral</span></div>
+<div class="row"><label>Hüfte</label><input id="hips" type="range" min="-1" max="1" step=".01" value="0"><span id="hipsV" class="value">Neutral</span></div>
+<div class="row"><label>Brust</label><input id="bust" type="range" min="-1" max="1" step=".01" value="0"><span id="bustV" class="value">Neutral</span></div>
+<div class="row"><label>Gesäß</label><input id="butt" type="range" min="-1" max="1" step=".01" value="0"><span id="buttV" class="value">Neutral</span></div>
+
+<div class="group-title">Pose</div>
 <div class="row"><label>Arme</label><input id="arms" type="range" min="-1" max="1" step=".01" value="0"><span id="armsV" class="value">A-Pose</span></div>
 <div class="row"><label>Beine</label><input id="legs" type="range" min="0" max="1" step=".01" value="0"><span id="legsV" class="value">Offen</span></div>
-<div class="presets">
-<button data-preset="neutral">Neutral</button><button data-preset="curvy">Curvy</button><button data-preset="slim">Slim</button><button data-preset="athletic">Athletic</button>
+
+<div class="presets"><button data-preset="neutral">Neutral</button><button data-preset="curvy">Curvy</button><button data-preset="slim">Slim</button><button data-preset="athletic">Athletic</button></div>
 </div>
-<div class="note">Körperform kombiniert Skinny ↔ Neutral ↔ Curvy. Höhe ist eine proportionale Gesamtskalierung. Arme und Beine sind unabhängige Pose-Morphs. Kein Harness-Code.</div>
 </section>
+
 <script type="module">
 import * as THREE from 'three';
 import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js';
@@ -48,29 +79,35 @@ import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x101116);
 const camera=new THREE.PerspectiveCamera(28,innerWidth/innerHeight,.01,20);camera.position.set(0,1.18,4.8);
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;document.getElementById('app').appendChild(renderer.domElement);
-const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,.95,0);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=2;controls.maxDistance=7;
+const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,.95,0);controls.enableDamping=true;controls.minDistance=2;controls.maxDistance=7;
 scene.add(new THREE.HemisphereLight(0xffffff,0x262936,2.4));
 const key=new THREE.DirectionalLight(0xffffff,3.2);key.position.set(2.5,4,3.5);scene.add(key);
 const fill=new THREE.DirectionalLight(0xb8c8ff,1.2);fill.position.set(-3,2,1);scene.add(fill);
 const floor=new THREE.Mesh(new THREE.CircleGeometry(1.4,64),new THREE.MeshStandardMaterial({color:0x262832,roughness:1}));floor.rotation.x=-Math.PI/2;scene.add(floor);
 
 const loader=new GLTFLoader(),models={},nominal={female:179.984741,male:179.992111};
-let gender='female';
-const status=document.getElementById('status');
 const mat=new THREE.MeshStandardMaterial({color:0xf2f2f4,roughness:.68,metalness:0});
-
+let gender='female';
 async function loadOne(g,url){
- const gltf=await loader.loadAsync(url);const root=gltf.scene;root.visible=false;
+ const gltf=await loader.loadAsync(url),root=gltf.scene;root.visible=false;
  const mesh=root.getObjectByProperty('isMesh',true);mesh.material=mat;
  models[g]={root,mesh,dict:mesh.morphTargetDictionary};scene.add(root);
 }
 await Promise.all([loadOne('female','./female_custom_morph.glb'),loadOne('male','./male_custom_morph.glb')]);
-models.female.root.visible=true;status.textContent='Female + Male geladen · je 18.004 Vertices · 6 Morph Targets';setTimeout(()=>status.style.opacity=.3,1800);
+models.female.root.visible=true;
+document.getElementById('status').textContent='Female + Male · je 18.004 Vertices · 14 Morph Targets';
 
 const E=id=>document.getElementById(id);
-const el={shape:E('shape'),muscular:E('muscular'),height:E('height'),arms:E('arms'),legs:E('legs')};
-for(const x of Object.values(el))x.addEventListener('input',update);
+const ids=['shape','muscular','height','waist','hips','bust','butt','arms','legs'],el={};
+ids.forEach(id=>{el[id]=E(id);el[id].addEventListener('input',update)});
 
+function signed(m,narrow,wide,v,scale=1){
+ m[narrow]=Math.max(0,-v)*scale;
+ m[wide]=Math.max(0,v)*scale;
+}
+function labelSigned(id,v,a,b){
+ E(id+'V').textContent=Math.abs(v)<.03?'Neutral':v<0?a+' '+Math.round(-v*100)+'%':b+' '+Math.round(v*100)+'%';
+}
 function setGender(g){
  gender=g;models.female.root.visible=g==='female';models.male.root.visible=g==='male';
  E('femaleBtn').classList.toggle('active',g==='female');E('maleBtn').classList.toggle('active',g==='male');update();
@@ -78,22 +115,80 @@ function setGender(g){
 E('femaleBtn').onclick=()=>setGender('female');E('maleBtn').onclick=()=>setGender('male');
 
 function update(){
- const m=models[gender];if(!m)return;const d=m.dict,inf=m.mesh.morphTargetInfluences;
- const shape=+el.shape.value,musc=+el.muscular.value,arms=+el.arms.value,legs=+el.legs.value,h=+el.height.value;
- inf[d.Skinny]=Math.max(0,-shape);inf[d.Overweight]=Math.max(0,shape);inf[d.Muscular]=musc;
- inf[d.ArmsStraight]=Math.max(0,-arms);inf[d.ArmsDown]=Math.max(0,arms);inf[d.LegsTogether]=legs;
- const sc=h/nominal[gender];m.root.scale.setScalar(sc);
+ const M=models[gender];if(!M)return;const d=M.dict,inf=M.mesh.morphTargetInfluences;
+ const shape=+el.shape.value,musc=+el.muscular.value,h=+el.height.value;
+ const waist=+el.waist.value,hips=+el.hips.value,bust=+el.bust.value,butt=+el.butt.value,arms=+el.arms.value,legs=+el.legs.value;
+ Object.keys(d).forEach(k=>inf[d[k]]=0);
 
- E('shapeV').textContent=Math.abs(shape)<.03?'Neutral':shape<0?'Schlank '+Math.round(-shape*100)+'%':'Curvy '+Math.round(shape*100)+'%';
+ inf[d.Skinny]=Math.max(0,-shape);inf[d.Overweight]=Math.max(0,shape);inf[d.Muscular]=musc;
+ const propScale=gender==='female'?1:.72;
+ signed(inf,d.WaistNarrow,d.WaistWide,waist,propScale);
+ signed(inf,d.HipsNarrow,d.HipsWide,hips,propScale);
+ signed(inf,d.BustSmall,d.BustLarge,bust,gender==='female'?1:.68);
+ signed(inf,d.ButtFlat,d.ButtFull,butt,gender==='female'?1:.72);
+ inf[d.ArmsStraight]=Math.max(0,-arms);inf[d.ArmsDown]=Math.max(0,arms);inf[d.LegsTogether]=legs;
+ M.root.scale.setScalar(h/nominal[gender]);
+
+ labelSigned('shape',shape,'Schlank','Curvy');
+ labelSigned('waist',waist,'Schmal','Breit');
+ labelSigned('hips',hips,'Schmal','Breit');
+ labelSigned('bust',bust,'Klein','Groß');
+ labelSigned('butt',butt,'Flach','Voll');
  E('muscularV').textContent=Math.round(musc*100)+'%';E('heightV').textContent=h+' cm';
  E('armsV').textContent=Math.abs(arms)<.03?'A-Pose':arms<0?'Gerade '+Math.round(-arms*100)+'%':'Unten '+Math.round(arms*100)+'%';
  E('legsV').textContent=legs<.03?'Offen':'Zusammen '+Math.round(legs*100)+'%';
 }
-const presets={neutral:[0,0,175,0,0],curvy:[.55,0,170,0,0],slim:[-.55,0,175,0,0],athletic:[-.08,.48,178,-.08,.08]};
-document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{const v=presets[b.dataset.preset];el.shape.value=v[0];el.muscular.value=v[1];el.height.value=v[2];el.arms.value=v[3];el.legs.value=v[4];update()});
+const presets={
+ neutral:[0,0,175,0,0,0,0,0,0],
+ curvy:[.38,0,170,-.18,.32,.22,.30,0,.05],
+ slim:[-.50,0,175,-.20,-.12,-.10,-.10,0,0],
+ athletic:[-.08,.48,178,0,.05,.08,.04,-.08,.08]
+};
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{
+ const v=presets[b.dataset.preset];
+ ids.forEach((id,i)=>el[id].value=v[i]);update();
+});
 update();
 
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)}loop();
-</script>
-</body></html>
+// Harness-style resizable bottom sheet.
+const modelSheet=E('modelSheet'),modelSheetGrabber=E('modelSheetGrabber');
+const sheetKey='bodyModelLab:sheetHeight';
+const savedSheetHeight=Number(localStorage.getItem(sheetKey));
+if(savedSheetHeight>118){
+  modelSheet.style.height=Math.min(savedSheetHeight,innerHeight*.82)+'px';
+}
+let sheetDrag=null;
+modelSheetGrabber.addEventListener('pointerdown',e=>{
+  sheetDrag={
+    id:e.pointerId,
+    startY:e.clientY,
+    startH:modelSheet.getBoundingClientRect().height
+  };
+  modelSheetGrabber.setPointerCapture?.(e.pointerId);
+  e.preventDefault();
+});
+modelSheetGrabber.addEventListener('pointermove',e=>{
+  if(!sheetDrag||e.pointerId!==sheetDrag.id)return;
+  const h=THREE.MathUtils.clamp(
+    sheetDrag.startH+(sheetDrag.startY-e.clientY),
+    118,
+    innerHeight*.82
+  );
+  modelSheet.style.height=h+'px';
+  e.preventDefault();
+});
+function endSheetDrag(e){
+  if(!sheetDrag||e.pointerId!==sheetDrag.id)return;
+  localStorage.setItem(sheetKey,String(modelSheet.getBoundingClientRect().height));
+  sheetDrag=null;
+}
+modelSheetGrabber.addEventListener('pointerup',endSheetDrag);
+modelSheetGrabber.addEventListener('pointercancel',endSheetDrag);
+
+addEventListener('resize',()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
+  const h=modelSheet.getBoundingClientRect().height;
+  if(h>innerHeight*.82)modelSheet.style.height=(innerHeight*.82)+'px';
+});
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})();
+</script></body></html>
