@@ -1,17 +1,36 @@
 {
-  "source": "FemaleCustomBasemesh package",
-  "base_used": "FemaleCustomBasemesh_by_AlexLashko_03_Caucasian.fbx",
-  "vertices": 18004,
-  "triangles": 36004,
-  "topology_identical_across_tested_variants": true,
+  "version": "0.2",
+  "independent_from_harness_designer": true,
+  "female": {
+    "source": "FemaleCustomBasemesh_LowPoly.blend",
+    "blender_version": "280",
+    "vertices": 18004,
+    "triangles": 36004,
+    "nominal_height_cm": 179.98
+  },
+  "male": {
+    "source": "MaleCustomBasemesh_LowPoly.blend",
+    "blender_version": "402",
+    "vertices": 18004,
+    "triangles": 36004,
+    "nominal_height_cm": 179.99
+  },
   "morph_targets": [
     "Muscular",
     "Overweight",
     "Skinny",
     "ArmsStraight",
-    "ArmsDown"
+    "ArmsDown",
+    "LegsTogether"
   ],
-  "body_face_preservation": "Body morph deltas smoothly masked to zero between Y=150-160cm to preserve chosen base face.",
-  "units": "converted from centimeters to meters",
-  "notes": "Eyes/Teeth intentionally excluded. Textures/normal maps intentionally excluded for white mannequin test."
+  "controls": [
+    "Gender",
+    "BodyShape Skinny\u2194Neutral\u2194Curvy",
+    "Muscularity",
+    "Height",
+    "Arms",
+    "Legs"
+  ],
+  "material": "white matte, no textures/eyes/teeth",
+  "topology_note": "Both source bodies expose 18,004 shape-key vertices. The verified 36,004-triangle topology from Female Model Lab v0.1 is used for the standalone morph GLBs."
 }

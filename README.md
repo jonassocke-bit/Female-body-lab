@@ -1,44 +1,25 @@
-# Female Model Lab v0.1
+# Body Model Lab v0.2
 
-Völlig unabhängiger Testblock. Der Harness-Designer wurde nicht verändert.
+Komplett unabhängiger Modellblock. Der Harness Designer wurde nicht verändert.
 
-## Enthalten
-- `female_custom_morph.glb`
-- `index.html`
-- `model_report.json`
+## Neu
+- Female / Male Umschalter
+- Körperform: Schlank ↔ Neutral ↔ Curvy
+- Muskulatur
+- Höhe: 145–205 cm
+- Arme: Gerade ↔ A-Pose ↔ Unten
+- Beine: Offen ↔ Zusammen
 
-## Modell
-Aus den gelieferten FBX-Varianten wurde ein einzelnes Morph-GLB erzeugt.
+## Modelle
+Female nominal: 180.0 cm
+Male nominal: 180.0 cm
 
+Beide GLBs:
 - 18.004 Vertices
 - 36.004 Dreiecke
-- identische Topologie in allen verwendeten Varianten
+- 6 Morph Targets
 - weißes mattes Material
-- keine Texturen
-- keine Augen
-- keine Zähne
+- keine Texturen, Augen oder Zähne
 
-Morph Targets:
-- Muscular
-- Overweight
-- Skinny
-- ArmsStraight
-- ArmsDown
-
-Für die drei Body-Morphs bleibt das Gesicht der Caucasian-Basis erhalten:
-Morph-Deltas werden zwischen 150 und 160 cm Körperhöhe weich ausgeblendet.
-So verändert ein Body-Regler nicht gleichzeitig ungewollt das Gesicht.
-
-## Start
-Auf GitHub Pages oder über einen lokalen Webserver öffnen.
-Wegen Browser-Sicherheitsregeln funktioniert `index.html` nicht zuverlässig per file://.
-
-Beispiel:
-`python -m http.server 8000`
-
-Dann `http://localhost:8000` öffnen.
-
-## Nächster Schritt
-Wenn dieser Morph-Test sauber aussieht, kann der Modellblock später separat in
-den Harness Designer integriert werden. Die Harness-/Riemenlogik muss dafür
-nicht neu geschrieben werden.
+Die Höhe ist aktuell eine proportionale Gesamtskalierung. Dadurch bleibt sie sehr
+performant und kann später im Harness Designer sauber als Modell-Transform geführt werden.
