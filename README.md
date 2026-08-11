@@ -1,30 +1,47 @@
-# Body Model Lab v0.3a
+# Harness Body Lab v0.6 — real MakeHuman target test
 
-Weiterhin komplett getrennt vom Harness Designer.
+Flat GitHub Pages project. Upload all five files to the repository root.
 
-Neu gegenüber v0.2:
-- Taille: schmal ↔ breit
-- Hüfte: schmal ↔ breit
-- Brust/Brustkorb: klein ↔ groß
-- Gesäß: flach ↔ voll
+## The important change
 
-Diese acht Richtungen sind echte zusätzliche Morph Targets im GLB:
-WaistNarrow/Wide, HipsNarrow/Wide, BustSmall/Large, ButtFlat/Full.
+The key fitting sliders now load and apply actual MakeHuman `.target` vertex deltas:
 
-Die Übergänge sind räumlich weich maskiert, sodass keine harten Ringe/Kanten
-zwischen deformierter und unveränderter Geometrie entstehen.
+- V-Shape: `torso-vshape-decr/incr`
+- Bust/Chest circumference: `measure-bust-circ-decr/incr`
+- Waist circumference: `measure-waist-circ-decr/incr`
+- Hip circumference: `measure-hips-circ-decr/incr`
+- Buttocks volume: `buttocks-volume-decr/incr`
+- Upper-arm circumference: `measure-upperarm-circ-decr/incr`
+- Thigh horizontal scale: left + right upper-leg targets
+- Calf circumference: `measure-calf-circ-decr/incr`
 
-Male und Female besitzen dieselben Regler. Beim Male-Modell ist der Einfluss
-im Viewer konservativer skaliert, ohne dafür ein zweites System zu benötigen.
+The OBJ parser preserves each triangle vertex's original hm08 vertex ID. This is essential:
+MakeHuman targets refer to original mesh vertex indices, while WebGL rendering duplicates
+vertices when quads/polygons are triangulated.
 
-Die bisherigen Morphs für Körperform, Muskulatur, Arme und Beine bleiben erhalten.
+Height, Weight and Muscle are deliberately marked with `*`: they remain lightweight
+approximations in this proof-of-concept. Proper MakeHuman macro morphing combines multiple
+macro targets and is the next step only if the real local morph quality is worth continuing.
+
+## Runtime sources
+
+- Body: NAVER Anny's CC0-adapted MPFB2 hm08 base mesh.
+- Targets: official makehumancommunity/makehuman-assets repository (CC0).
+
+The app fetches these through jsDelivr so the GitHub repository itself stays flat and tiny.
 
 
-## UI v0.3a
-- Harness-Designer-artiges Bottom-Sheet
-- große Grab-Zone oben
-- frei hoch/runterziehbar
-- minimale Höhe 118 px
-- maximale Höhe 82 % der Bildschirmhöhe
-- Inhalt scrollt innerhalb des Panels
-- gewählte Panelhöhe wird lokal gespeichert
+## v0.7 fixes
+
+### Smooth body
+v0.6 expanded OBJ faces into separate triangle vertices. That caused visible faceting because
+adjacent triangles no longer shared normals. v0.7 uses an indexed BufferGeometry with one
+render vertex per original hm08 body vertex. `computeVertexNormals()` therefore produces
+continuous smooth shading across the body surface.
+
+### Real target loading
+The official `makehuman-assets` repository stores assets through Git LFS. v0.7 tries the
+GitHub LFS media endpoint first and the raw endpoint second, and explicitly rejects LFS
+pointer text instead of silently pretending the target loaded.
+
+The status line now tells you how many real target groups are actually active.
